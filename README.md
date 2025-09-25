@@ -1,11 +1,11 @@
-# ms-locations-neg
+# ms-rutafit-neg
 
 Microservice for location management built with Node.js, Express, and MongoDB.
 
 ## Project Structure
 
 ```
-ms-locations-neg/
+ms-rutafit-neg/
 │
 ├── app/
 |   ├── cache/          # Caching layer
