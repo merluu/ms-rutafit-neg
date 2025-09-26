@@ -9,9 +9,13 @@ server.use(config.server.context + config.swagger.endpoint, swaggerUi.serve, swa
 
 server.use(requestLoggerMiddleware);
 
-// Locations routes
-// ms-locations-neg/locations --> LocationRoute.js
+// locations routes
+// ms-rutafit-neg/locations --> LocationRoute.js
 server.use(config.server.context + config.routes.locations, require('./routes/LocationRoute'));
+
+// users routes
+// ms-rutafit-neg/users --> + UserRoute.js
+server.use(config.server.context + config.routes.users, require('./routes/UserRoute'));
 
 server.use(errorMiddleware);
 

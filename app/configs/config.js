@@ -6,7 +6,7 @@ const swaggerDocument = yaml.load(fs.readFileSync(path.join(__dirname, '../docs/
 
 const config = {
   server: {
-    context: '/ms-locations-neg',
+    context: '/ms-rutafit-neg',
     port: process.env.PORT || 3000,
     requestTimeout: 10 * 1000 // 10 seconds
   },
@@ -23,7 +23,8 @@ const config = {
     allowedHeaders: ['Content-Type', 'Authorization']
   },
   routes: {
-    locations: '/locations'
+    locations: '/locations',
+    users: '/users'
   },
   cache: {
     time: 5 * 60 * 1000 // 5 minutes
