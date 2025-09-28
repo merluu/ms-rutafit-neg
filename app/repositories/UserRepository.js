@@ -6,7 +6,9 @@ class UserRepository {
         console.info(`${new Date().toISOString()} [UserRepository] [save] [START] Save [${JSON.stringify(user)}]`);
 
         const mongoDBClientUser = new MongoDBClientUser();
-        await mongoDBClientUser.save(user);
+        const { uid, ...userWithoutUid } = user;
+        const userToSave = { ...userWithoutUid, _id: uid };
+        await mongoDBClientUser.save(userToSave);
         console.info(`${new Date().toISOString()} [UserRepository] [save] [END] Save`);
     }
 
