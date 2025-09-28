@@ -12,7 +12,15 @@ class UserController {
 
             const data = req.body;
 
-            const userDTO = new UserDTO(data.rut, data.nombre, data.edad);
+            const userDTO = new UserDTO(
+                data.uid,
+                data.nombre,
+                data.apellido,
+                data.email,
+                data.fechaNacimiento,
+                data.genero,
+                data.deporteFavorito,
+                data.nivelExperiencia);
             const userService = new UserService();
             const userMapper = new UserMapper();
 
