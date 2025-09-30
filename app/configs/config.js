@@ -24,7 +24,9 @@ const config = {
   },
   routes: {
     locations: '/locations',
-    users: '/users'
+    users: '/users',
+    nivelExperiencia: '/nivel-experiencia',
+    tiposDeporte: '/tipos-deporte'
   },
   cache: {
     time: 5 * 60 * 1000 // 5 minutes
