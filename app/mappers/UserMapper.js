@@ -23,6 +23,15 @@ class UserMapper {
         // Si no viene retornar nulo por defecto
         if (!domain) return null;
 
+        // Convierte la fecha a la zona horaria de Chile (GMT-3)
+        let fechaRegistroChile = null;
+        if (domain.fechaRegistro) {
+            const fecha = new Date(domain.fechaRegistro);
+            // Resta 3 horas para convertir de UTC a Chile
+            fecha.setHours(fecha.getHours() - 3);
+            fechaRegistroChile = fecha.toISOString();
+        }
+
         return new UserDTO(
             domain._id,
             domain.nombre,
@@ -32,7 +41,7 @@ class UserMapper {
             domain.genero,
             domain.deporteFavorito,
             domain.nivelExperiencia,
-            domain.fechaRegistro);
+            fechaRegistroChile);
     }
 
 }

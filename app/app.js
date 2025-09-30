@@ -17,6 +17,14 @@ server.use(config.server.context + config.routes.locations, require('./routes/Lo
 // ms-rutafit-neg/users --> + UserRoute.js
 server.use(config.server.context + config.routes.users, require('./routes/UserRoute'));
 
+// nivel experiencia routes
+// ms-rutafit-neg/nivel-experiencia --> nivelExperienciaRoutes.js
+server.use(config.server.context + config.routes.nivelExperiencia, require('./routes/nivelExperienciaRoutes'));
+
+// tipos deporte routes  
+// ms-rutafit-neg/tipos-deporte --> tipoDeporteRoutes.js
+server.use(config.server.context + config.routes.tiposDeporte, require('./routes/tipoDeporteRoutes'));
+
 server.use(errorMiddleware);
 
 module.exports = server;
