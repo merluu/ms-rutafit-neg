@@ -47,6 +47,29 @@ class UserController {
             next(error);
         }
     }
+
+    async findByUid(req, res, next) {
+        try {
+            const { uid } = req.params;
+            if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+                throw new ParametersError('El parámetro uid es requerido.');
+            }
+
+            const userService = new UserService();
+            const user = await userService.findByUid(uid);
+
+            if (!user) {
+                return res.status(404).json({ message: `Usuario con uid ${uid} no encontrado` });
+            }
+
+            const userMapper = new UserMapper();
+            const dto = userMapper.toDTO(user);
+            return res.status(200).json(dto);
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }
 
 module.exports = UserController;

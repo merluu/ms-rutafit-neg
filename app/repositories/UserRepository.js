@@ -19,6 +19,17 @@ class UserRepository {
         console.info(`${new Date().toISOString()} [UserRepository] [findAll] [END] Find All [${users.length}]`);
         return users;
     }
+
+    async findByUid(uid) {
+        console.info(`${new Date().toISOString()} [UserRepository] [findByUid] [START] uid=${uid}`);
+        const mongoDBClientUser = new MongoDBClientUser();
+        const user = (mongoDBClientUser.findById)
+            ? await mongoDBClientUser.findById(uid)
+            : await mongoDBClientUser.findOne({ _id: uid });
+
+        console.info(`${new Date().toISOString()} [UserRepository] [findByUid] [END] ${user ? 'FOUND' : 'NOT_FOUND'}`);
+        return user || null;
+    }
 }
 
 module.exports = UserRepository;
