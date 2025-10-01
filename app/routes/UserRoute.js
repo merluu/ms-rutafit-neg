@@ -9,4 +9,6 @@ router.post('/', (req, res, next) => userController.save(req, res, next));
 
 router.get('/', (req, res, next) => userController.findAll(req, res, next));
 
+router.get('/:uid', (req, res, next) => userController.findByUid(req, res, next));
+
 module.exports = router;
