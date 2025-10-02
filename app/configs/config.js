@@ -26,7 +26,8 @@ const config = {
     locations: '/locations',
     users: '/users',
     nivelExperiencia: '/nivel-experiencia',
-    tiposDeporte: '/tipos-deporte'
+    tiposDeporte: '/tipos-deporte',
+    eventos: '/eventos'
   },
   cache: {
     time: 5 * 60 * 1000 // 5 minutes
