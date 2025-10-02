@@ -70,6 +70,55 @@ class UserController {
         }
     }
 
+    async update(req, res, next) {
+        try {
+            const { uid } = req.params;
+            const data = req.body || {};
+
+            // No permitir estos campos
+            const forbidden = [];
+            if (Object.prototype.hasOwnProperty.call(data, 'uid')) forbidden.push('uid');
+            if (Object.prototype.hasOwnProperty.call(data, 'email')) forbidden.push('email');
+            if (Object.prototype.hasOwnProperty.call(data, 'fechaRegistro')) forbidden.push('fechaRegistro');
+
+            if (forbidden.length) {
+                return res.status(400).json({
+                    message: `No se permite modificar: ${forbidden.join(', ')}`
+                });
+            }
+
+            // Sólo campos permitidos
+            const allowedUpdate = {
+                nombre: data.nombre,
+                apellido: data.apellido,
+                fechaNacimiento: data.fechaNacimiento,
+                genero: data.genero,
+                deporteFavorito: data.deporteFavorito,
+                nivelExperiencia: data.nivelExperiencia,
+                // cualquier otro campo editable que quieras permitir
+            };
+
+            // Elimina undefined para no sobreescribir con vacío
+            Object.keys(allowedUpdate).forEach(
+                (k) => allowedUpdate[k] === undefined && delete allowedUpdate[k]
+            );
+
+            const userService = new UserService();
+            const updated = await userService.update(uid, allowedUpdate);
+
+            if (!updated) {
+                return res.status(404).json({ message: `Usuario ${uid} no encontrado` });
+            }
+
+            const userMapper = new UserMapper();
+            return res.status(200).json(userMapper.toDTO(updated));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
+
 }
 
 module.exports = UserController;
