@@ -27,6 +27,16 @@ class UserService {
         console.info(`${new Date().toISOString()} [UserService] [findByUid] [END] ${user ? 'FOUND' : 'NOT_FOUND'}`);
         return user;
     }
+
+    async update(uid, partialData) {
+        console.info(`${new Date().toISOString()} [UserService] [update] [START] uid=${uid}`);
+        const userRepository = new UserRepository();
+        const updated = await userRepository.update(uid, partialData);
+        console.info(`${new Date().toISOString()} [UserService] [update] [END] ${updated ? 'OK' : 'NOT_FOUND'}`);
+        return updated;
+    }
+
+
 }
 
 module.exports = UserService;

@@ -30,6 +30,24 @@ class UserRepository {
         console.info(`${new Date().toISOString()} [UserRepository] [findByUid] [END] ${user ? 'FOUND' : 'NOT_FOUND'}`);
         return user || null;
     }
+
+    async update(uid, partialData) {
+        console.info(`${new Date().toISOString()} [UserRepository] [update] [START] uid=${uid}`);
+
+        const mongoDBClientUser = new MongoDBClientUser();
+
+        // Defensa extra: jamás enviar estos campos al $set
+        const { uid: _u, _id, email, fechaRegistro, ...safe } = partialData;
+
+        const result = await mongoDBClientUser.update(uid, safe);
+        if (result.matchedCount === 0) return null;
+
+        const fresh = await mongoDBClientUser.findById(uid);
+        console.info(`${new Date().toISOString()} [UserRepository] [update] [END]`);
+        return fresh;
+    }
+
+
 }
 
 module.exports = UserRepository;
