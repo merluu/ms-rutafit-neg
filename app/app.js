@@ -25,6 +25,10 @@ server.use(config.server.context + config.routes.nivelExperiencia, require('./ro
 // ms-rutafit-neg/tipos-deporte --> tipoDeporteRoutes.js
 server.use(config.server.context + config.routes.tiposDeporte, require('./routes/tipoDeporteRoutes'));
 
+// eventos routes
+// ms-rutafit-neg/eventos --> eventoRoutes.js
+server.use(config.server.context + config.routes.eventos, require('./routes/eventoRoutes'));
+
 server.use(errorMiddleware);
 
 module.exports = server;
