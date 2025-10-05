@@ -4,7 +4,6 @@ const UserDTO = require('../dtos/UserDTO');
 class UserMapper {
 
     toDomain(dto) {
-        // Si no viene retornar nulo por defecto
         if (!dto) return null;
 
         return new User(
@@ -16,18 +15,20 @@ class UserMapper {
             dto.genero,
             dto.deporteFavorito,
             dto.nivelExperiencia,
-            dto.fechaRegistro || new Date());
+            dto.fechaRegistro || new Date(),
+            dto.rutas || [],
+            dto.eventos || [],
+            dto.avatar || ""
+        );
     }
 
     toDTO(domain) {
-        // Si no viene retornar nulo por defecto
         if (!domain) return null;
 
-        // Convierte la fecha a la zona horaria de Chile (GMT-3)
+        // Ajuste horario Chile (GMT-3) si procede
         let fechaRegistroChile = null;
         if (domain.fechaRegistro) {
             const fecha = new Date(domain.fechaRegistro);
-            // Resta 3 horas para convertir de UTC a Chile
             fecha.setHours(fecha.getHours() - 3);
             fechaRegistroChile = fecha.toISOString();
         }
@@ -41,9 +42,12 @@ class UserMapper {
             domain.genero,
             domain.deporteFavorito,
             domain.nivelExperiencia,
-            fechaRegistroChile);
+            fechaRegistroChile,
+            domain.rutas || [],
+            domain.eventos || [],
+            domain.avatar || ""
+        );
     }
-
 }
 
 module.exports = UserMapper;

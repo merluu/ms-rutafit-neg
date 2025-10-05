@@ -5,13 +5,13 @@ const UserMapper = require('../mappers/UserMapper')
 
 class UserController {
 
-
     async save(req, res, next) {
         try {
             console.info(`${new Date().toISOString()} [UserController] [save] [START] Save`);
 
-            const data = req.body;
+            const data = req.body || {};
 
+            // NEW: si no vienen, setear por defecto
             const userDTO = new UserDTO(
                 data.uid,
                 data.nombre,
@@ -20,7 +20,13 @@ class UserController {
                 data.fechaNacimiento,
                 data.genero,
                 data.deporteFavorito,
-                data.nivelExperiencia);
+                data.nivelExperiencia,
+                data.fechaRegistro,              // opcional: seguirá cayendo default en el mapper
+                Array.isArray(data.rutas) ? data.rutas : [],
+                Array.isArray(data.eventos) ? data.eventos : [],
+                typeof data.avatar === 'string' ? data.avatar : ""
+            );
+
             const userService = new UserService();
             const userMapper = new UserMapper();
 
@@ -39,9 +45,7 @@ class UserController {
             const users = await userService.findAll();
             const userMapper = new UserMapper();
 
-            // esta linea transforma la lista de usuarios de dominio a una lista de usuarios dto
             const usersDTO = users.map(user => userMapper.toDTO(user));
-
             res.status(200).json(usersDTO);
         } catch (error) {
             next(error);
@@ -87,7 +91,7 @@ class UserController {
                 });
             }
 
-            // Sólo campos permitidos
+            // NEW: permitir actualización segura de avatar/rutas/eventos + campos previos
             const allowedUpdate = {
                 nombre: data.nombre,
                 apellido: data.apellido,
@@ -95,7 +99,9 @@ class UserController {
                 genero: data.genero,
                 deporteFavorito: data.deporteFavorito,
                 nivelExperiencia: data.nivelExperiencia,
-                // cualquier otro campo editable que quieras permitir
+                avatar: typeof data.avatar === 'string' ? data.avatar : undefined,
+                rutas: Array.isArray(data.rutas) ? data.rutas : undefined,
+                eventos: Array.isArray(data.eventos) ? data.eventos : undefined,
             };
 
             // Elimina undefined para no sobreescribir con vacío
@@ -116,9 +122,6 @@ class UserController {
             next(error);
         }
     }
-
-
-
 }
 
 module.exports = UserController;
