@@ -7,7 +7,20 @@ class UserRepository {
 
         const mongoDBClientUser = new MongoDBClientUser();
         const { uid, ...userWithoutUid } = user;
-        const userToSave = { ...userWithoutUid, _id: uid };
+
+        // NEW: defaults seguros antes de insertar
+        const rutas = Array.isArray(userWithoutUid.rutas) ? userWithoutUid.rutas : [];
+        const eventos = Array.isArray(userWithoutUid.eventos) ? userWithoutUid.eventos : [];
+        const avatar = typeof userWithoutUid.avatar === 'string' ? userWithoutUid.avatar : "";
+
+        const userToSave = {
+            ...userWithoutUid,
+            rutas,
+            eventos,
+            avatar,
+            _id: uid
+        };
+
         await mongoDBClientUser.save(userToSave);
         console.info(`${new Date().toISOString()} [UserRepository] [save] [END] Save`);
     }
@@ -39,6 +52,11 @@ class UserRepository {
         // Defensa extra: jamás enviar estos campos al $set
         const { uid: _u, _id, email, fechaRegistro, ...safe } = partialData;
 
+        // NEW: normalizar tipos si vienen
+        if (safe.rutas !== undefined && !Array.isArray(safe.rutas)) delete safe.rutas;
+        if (safe.eventos !== undefined && !Array.isArray(safe.eventos)) delete safe.eventos;
+        if (safe.avatar !== undefined && typeof safe.avatar !== 'string') delete safe.avatar;
+
         const result = await mongoDBClientUser.update(uid, safe);
         if (result.matchedCount === 0) return null;
 
@@ -46,8 +64,6 @@ class UserRepository {
         console.info(`${new Date().toISOString()} [UserRepository] [update] [END]`);
         return fresh;
     }
-
-
 }
 
 module.exports = UserRepository;
