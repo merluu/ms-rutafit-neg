@@ -20,4 +20,9 @@ router.get('/mios/buckets', (req, res, next) => eventoController.getMyEventsBuck
 // buscar por id (debe ir al final para no capturar /mios)
 router.get('/:id', (req, res, next) => eventoController.findById(req, res, next));
 
+// === participar y cancelar participacion ===
+router.post('/:id/participar', (req, res, next) => eventoController.participate(req, res, next));
+router.delete('/:id/participar', (req, res, next) => eventoController.cancelParticipation(req, res, next));
+
+
 module.exports = router;

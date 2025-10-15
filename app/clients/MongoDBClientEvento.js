@@ -152,6 +152,39 @@ class MongoDBClientEvento {
       throw error;
     }
   }
+
+  //  agregar participante al evento
+  async addParticipant(eventId, uid) {
+    try {
+      if (!this.collection) await this.connect();
+      const { ObjectId } = require('mongodb');
+      const res = await this.collection.updateOne(
+        { _id: new ObjectId(eventId) },
+        { $addToSet: { participantes: uid } }
+      );
+      return res;
+    } catch (e) {
+      console.error(`[MongoDBClientEvento] addParticipant error:`, e);
+      throw e;
+    }
+  }
+
+  // quitar participante del evento
+  async removeParticipant(eventId, uid) {
+    try {
+      if (!this.collection) await this.connect();
+      const { ObjectId } = require('mongodb');
+      const res = await this.collection.updateOne(
+        { _id: new ObjectId(eventId) },
+        { $pull: { participantes: uid } }
+      );
+      return res;
+    } catch (e) {
+      console.error(`[MongoDBClientEvento] removeParticipant error:`, e);
+      throw e;
+    }
+  }
+
 }
 
 module.exports = MongoDBClientEvento;
