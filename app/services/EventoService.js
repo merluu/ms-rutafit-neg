@@ -94,6 +94,21 @@ class EventoService {
     console.info(`${new Date().toISOString()} [EventoService] [getUserEventsBuckets] [END] created=${created.length} joined=${joined.length}`);
     return response;
   }
+
+  // 
+  async participate(eventId, uid) {
+    const repo = new (require('../repositories/EventoRepository'))();
+    const result = await repo.participate(eventId, uid);
+    return result; // {ok, code, message}
+  }
+
+  async cancelParticipation(eventId, uid) {
+    const repo = new (require('../repositories/EventoRepository'))();
+    const result = await repo.cancelParticipation(eventId, uid);
+    return result; // {ok, code, message}
+  }
+
+
 }
 
 module.exports = EventoService;
