@@ -3,26 +3,21 @@ const MongoDBClientUser = require('../clients/MongoDBClientUser')
 class UserRepository {
 
     async save(user) {
-        console.info(`${new Date().toISOString()} [UserRepository] [save] [START] Save [${JSON.stringify(user)}]`);
-
         const mongoDBClientUser = new MongoDBClientUser();
         const { uid, ...userWithoutUid } = user;
 
-        // NEW: defaults seguros antes de insertar
         const rutas = Array.isArray(userWithoutUid.rutas) ? userWithoutUid.rutas : [];
         const eventos = Array.isArray(userWithoutUid.eventos) ? userWithoutUid.eventos : [];
         const avatar = typeof userWithoutUid.avatar === 'string' ? userWithoutUid.avatar : "";
-
-        const userToSave = {
-            ...userWithoutUid,
-            rutas,
-            eventos,
-            avatar,
-            _id: uid
+        const expoPushToken = typeof userWithoutUid.expoPushToken === 'string' ? userWithoutUid.expoPushToken : "";
+        const notifications = {
+            enabled: userWithoutUid.notifications?.enabled ?? true,
+            onEventJoin: userWithoutUid.notifications?.onEventJoin ?? true,
+            onEventCancelled: userWithoutUid.notifications?.onEventCancelled ?? true,
         };
 
+        const userToSave = { ...userWithoutUid, rutas, eventos, avatar, expoPushToken, notifications, _id: uid };
         await mongoDBClientUser.save(userToSave);
-        console.info(`${new Date().toISOString()} [UserRepository] [save] [END] Save`);
     }
 
     async findAll() {
@@ -56,6 +51,15 @@ class UserRepository {
         if (safe.rutas !== undefined && !Array.isArray(safe.rutas)) delete safe.rutas;
         if (safe.eventos !== undefined && !Array.isArray(safe.eventos)) delete safe.eventos;
         if (safe.avatar !== undefined && typeof safe.avatar !== 'string') delete safe.avatar;
+        if (safe.expoPushToken !== undefined && typeof safe.expoPushToken !== 'string') delete safe.expoPushToken;
+        if (safe.notifications !== undefined) {
+            const n = safe.notifications;
+            safe.notifications = {
+                enabled: n?.enabled ?? true,
+                onEventJoin: n?.onEventJoin ?? true,
+                onEventCancelled: n?.onEventCancelled ?? true
+            };
+        }
 
         const result = await mongoDBClientUser.update(uid, safe);
         if (result.matchedCount === 0) return null;

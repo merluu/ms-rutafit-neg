@@ -102,6 +102,8 @@ class UserController {
                 avatar: typeof data.avatar === 'string' ? data.avatar : undefined,
                 rutas: Array.isArray(data.rutas) ? data.rutas : undefined,
                 eventos: Array.isArray(data.eventos) ? data.eventos : undefined,
+                expoPushToken: typeof data.expoPushToken === 'string' ? data.expoPushToken : undefined,
+                notifications: data.notifications
             };
 
             // Elimina undefined para no sobreescribir con vacío

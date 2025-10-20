@@ -18,21 +18,21 @@ class UserMapper {
             dto.fechaRegistro || new Date(),
             dto.rutas || [],
             dto.eventos || [],
-            dto.avatar || ""
+            dto.avatar || "",
+            dto.expoPushToken || "",
+            dto.notifications || { enabled: true, onEventJoin: true, onEventCancelled: true }
         );
     }
 
     toDTO(domain) {
         if (!domain) return null;
-
-        // Ajuste horario Chile (GMT-3) si procede
+        // (tu ajuste GMT-3 se mantiene)
         let fechaRegistroChile = null;
         if (domain.fechaRegistro) {
             const fecha = new Date(domain.fechaRegistro);
             fecha.setHours(fecha.getHours() - 3);
             fechaRegistroChile = fecha.toISOString();
         }
-
         return new UserDTO(
             domain._id,
             domain.nombre,
@@ -45,7 +45,9 @@ class UserMapper {
             fechaRegistroChile,
             domain.rutas || [],
             domain.eventos || [],
-            domain.avatar || ""
+            domain.avatar || "",
+            domain.expoPushToken || "",
+            domain.notifications || { enabled: true, onEventJoin: true, onEventCancelled: true }
         );
     }
 }

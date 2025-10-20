@@ -69,9 +69,29 @@ class EventoRepository {
       return { ok: false, code: 'EVENT_FULL', message: 'El evento alcanzó el máximo de participantes' };
     }
 
+    const push = require('../services/PushService');
+    const userRepo = new (require('./UserRepository'))();
+
     // 3) agregar (idempotente)
     await eventoClient.addParticipant(eventId, uid);
     await userClient.pushEvent(uid, eventId);
+
+    if (!yaParticipa) {
+      const creatorUid = ev.createdBy;
+      // lee al creador
+      const creator = await userRepo.findByUid(creatorUid);
+      // respeta preferencias
+      const prefs = creator?.notifications || {};
+      const token = creator?.expoPushToken || "";
+      if (prefs.enabled !== false && prefs.onEventJoin !== false && token) {
+        await push.sendNotifications([{
+          to: token,
+          title: '¡Nuevo participante!',
+          body: `Un usuario se unió a tu evento: ${ev.nombre_evento}`,
+          data: { type: 'EVENT_JOIN', eventId }
+        }]);
+      }
+    }
 
     // 4) mensajes simples
     if (yaParticipa) {
@@ -103,6 +123,38 @@ class EventoRepository {
     try {
       // 2) quitar eventId del usuario (idempotente)
       await userClient.pullEvent(uid, eventId);
+
+      if (ev.createdBy === uid) {
+        await eventoClient.cancelEvent(eventId);
+
+        // Notificar a todos los participantes (excluye duplicados; pueden estar uids)
+        const participantes = Array.isArray(ev.participantes) ? ev.participantes : [];
+        if (participantes.length) {
+          const userClient = new (require('../clients/MongoDBClientUser'))();
+          const users = await userClient.findByIds(participantes); // nuevo helper
+          const messages = [];
+
+          for (const u of users) {
+            const prefs = u?.notifications || {};
+            const token = u?.expoPushToken || "";
+            if (prefs.enabled !== false && prefs.onEventCancelled !== false && token) {
+              messages.push({
+                to: token,
+                title: 'Evento cancelado',
+                body: `El evento "${ev.nombre_evento}" ha sido cancelado por su creador.`,
+                data: { type: 'EVENT_CANCELLED', eventId }
+              });
+            }
+          }
+
+          if (messages.length) {
+            const push = require('../services/PushService');
+            await push.sendNotifications(messages);
+          }
+        }
+
+        return { ok: true, code: 'EVENT_CANCELLED', message: 'Evento cancelado por el creador' };
+      }
 
       // 3) si el usuario es el creador, cancelar el evento (sin importar si está en participantes)
       console.log('Comparando creador:', ev.createdBy, 'con uid:', uid);
