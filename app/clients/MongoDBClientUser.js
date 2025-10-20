@@ -121,6 +121,42 @@ class MongoDBClientUser {
         }
     }
 
+    // Buscar por array de _id (uids)
+    async findByIds(uids = []) {
+        try {
+            if (!this.collection) await this.connect();
+            return await this.collection.find({ _id: { $in: uids } }).toArray();
+        } catch (e) { console.error(`[MongoDBClientUser] findByIds error:`, e); throw e; }
+    }
+
+    //  actualizar solo token
+    async updatePushToken(uid, expoPushToken) {
+        try {
+            if (!this.collection) await this.connect();
+            return await this.collection.updateOne(
+                { _id: uid },
+                { $set: { expoPushToken } }
+            );
+        } catch (e) { console.error(`[MongoDBClientUser] updatePushToken error:`, e); throw e; }
+    }
+
+    // actualizar solo preferencias
+    async updateNotifications(uid, notifications) {
+        try {
+            if (!this.collection) await this.connect();
+            const n = {
+                enabled: notifications?.enabled ?? true,
+                onEventJoin: notifications?.onEventJoin ?? true,
+                onEventCancelled: notifications?.onEventCancelled ?? true,
+            };
+            return await this.collection.updateOne(
+                { _id: uid },
+                { $set: { notifications: n } }
+            );
+        } catch (e) { console.error(`[MongoDBClientUser] updateNotifications error:`, e); throw e; }
+    }
+
+
 }
 
 module.exports = MongoDBClientUser;
